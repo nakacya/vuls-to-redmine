@@ -35,6 +35,8 @@ server=http://your_redmine_URL/
 ````
 
 変換した csv を vuls-to-redmine.pl にて実行
+````
 $ ./vuls-to-redmine.pl -c param.conf
+````
 
 PS:vuls -diff の結果を csv に出力して使ったほうが使いやすいかと思われ
