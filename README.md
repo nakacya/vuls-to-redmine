@@ -48,3 +48,8 @@ $ ./vuls-to-redmine.pl -c param.conf
 ````
 
 PS:vuls -diff の結果を csv に出力して使ったほうが使いやすいかと思われ
+````
+$ mkdir /vuls_results/diff
+$ cp /vuls/results/current/*_diff.json /vuls/results/diff
+$ vulslogconverter -i /vuls/results/diff -o /vuls/results/diff/output.csv -t csv
+$ /vuls-to-redmine.pl -c param.conf
