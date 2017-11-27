@@ -9,9 +9,11 @@ $ vulslogconverter -i /vuls/results/current -o /vuls/results/current/output.csv 
 
 ````
 $ git clone https://github.com/nakacya/vuls-to-redmine
+````
 
 param.conf を随時修正
 
+````
 $ vi param.conf
 [API]
 key=redmine_api_key
