@@ -34,6 +34,14 @@ files=output.csv
 server=http://your_redmine_URL/
 ````
 
+### RedMine へカスタムフィールドを追加
+````
+CVSS=小数
+DetectionMethod=リスト(OvalMatch/ChangelogExactMatch)
+NotFixedYet=リスト(true/false)
+を作成する
+````
+
 変換した csv を vuls-to-redmine.pl にて実行
 ````
 $ ./vuls-to-redmine.pl -c param.conf
