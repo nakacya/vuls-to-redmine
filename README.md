@@ -53,3 +53,4 @@ $ mkdir /vuls_results/diff
 $ cp /vuls/results/current/*_diff.json /vuls/results/diff
 $ vulslogconverter -i /vuls/results/diff -o /vuls/results/diff/output.csv -t csv
 $ /vuls-to-redmine.pl -c param.conf
+$ rm -rf /vuls/results/diff
