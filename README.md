@@ -11,6 +11,14 @@ $ vulslogconverter -i /vuls/results/current -o /vuls/results/current/output.csv 
 $ git clone https://github.com/nakacya/vuls-to-redmine
 ````
 
+````
+Config::Tiny
+Text::CSV_XS
+LWP::UserAgent
+JSON
+の perl module を追加
+````
+
 param.conf を随時修正
 
 ````
