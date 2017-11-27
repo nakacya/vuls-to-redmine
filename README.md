@@ -32,6 +32,9 @@ status_id=1
 path=csv_path
 files=output.csv
 server=http://your_redmine_URL/
+cvss=1
+method=2
+notfix=3
 ````
 
 ### Redmine へカスタムフィールドを追加
