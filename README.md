@@ -34,7 +34,7 @@ files=output.csv
 server=http://your_redmine_URL/
 ````
 
-### RedMine へカスタムフィールドを追加
+### Redmine へカスタムフィールドを追加
 ````
 CVSS=小数
 DetectionMethod=リスト(OvalMatch/ChangelogExactMatch)
