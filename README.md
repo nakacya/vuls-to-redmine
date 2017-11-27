@@ -8,6 +8,7 @@ $ vulslogconverter -i /vuls/results/current -o /vuls/results/current/output.csv 
 $ ./vuls-to-redmine.pl -c param.conf
 
 param.conf はこんな感じ
+
 [API]
 key=redmine_api_key
 project_id=1
