@@ -4,7 +4,6 @@ use utf8;
 use Text::CSV_XS;
 use Encode;
 use IO::File;
-use Fcntl qw(:flock);
 use Data::Dumper;
 use LWP::UserAgent;
 use JSON;
@@ -23,19 +22,18 @@ unless (-f "$opts{'c'}") {
 }
 $Config = Config::Tiny->read( "$opts{'c'}" );
 
-unless (-f "$Config->{API}->{path}$Config->{API}->{files}") {
-   die "$Config->{API}->{path}$Config->{API}->{files} NOT FOUND\n"
+unless (-f "$Config->{API}->{path}/$Config->{API}->{files}") {
+   die "$Config->{API}->{path}/$Config->{API}->{files} NOT FOUND\n"
 }
+
 #   CSV DATA get
     my $csv = Text::CSV_XS->new ({ binary => 1 });
-    my $io  = IO::File->new("$Config->{API}->{path}$Config->{API}->{files}", "r");
+    my $io  = IO::File->new("$Config->{API}->{path}/$Config->{API}->{files}", "r");
     my $columns = $csv->getline_all($io);
-    my $count =  @$columns - 1;
+    my $count =  @$columns;
     print "START $count data Found\n";
-    for (my $l = 1; $l <= $count ; $l++){
-       if ( $columns->[$l][6] ne "healthy") {
-           query($Config->{API}->{server},"POST",$columns->[$l]);
-       }
+    for (my $l = 0; $l <= $count - 1 ; $l++){
+        query($Config->{API}->{server},"POST",$columns->[$l]);
     }
     print "END\n";
 $csv->eof;
@@ -88,15 +86,48 @@ JSON
          unless ($res->is_success) {
               return($res->status_line);
          }
+         return;
+     }
+     my $cvss_data = 0.0;
+     if ($data_ref->{"issues"}[0]->{"custom_fields"}[$Config->{API}->{cvss}-1]->{"value"} > $data->[13]) {
+         $cvss_data = $data_ref->{"issues"}[0]->{"custom_fields"}[$Config->{API}->{cvss}-1]->{"value"};
+     } else {
+         $cvss_data = $data->[13];
+     }
+     # SUBJECT Search FOUND # CLOSED
+     if ( $data->[21] eq "CLOSED!!" ) {
+my $json = <<"JSON";
+         {
+          "issue": {
+            "project_id": $Config->{API}->{project_id},
+            "tracker_id": $Config->{API}->{tracker_id},
+            "status_id": $Config->{API}->{closed_status_id},
+            "done_ratio": 100,
+            "assigned_to_id": $Config->{API}->{assigned_to_id},
+            "subject": "$data->[4] $data->[8] $data->[9]",
+            "notes": "\[\[ @{[encode('utf-8', $data->[21])]} \]\]",
+            "custom_fields":
+             [
+                 {"value": $cvss_data,"id":$Config->{API}->{cvss}},
+                 {"value": "$data->[7]","id":$Config->{API}->{method}},
+                 {"value": "$data->[11]","id":$Config->{API}->{notfix}}
+             ]
+          }
+         }
+JSON
+         my $req = HTTP::Request->new(PUT => $url . "issues/" . $data_ref->{issues}->[0]->{id} . "\.json");
+         $req->content_type('application/json;charset=utf-8');
+         $req->header("X-Redmine-API-Key" => $Config->{API}->{key});
+         $req->content($json);
+         my $ua  = LWP::UserAgent->new;
+         $res = $ua->request($req);
+         # Success  or unSuccess
+         unless ($res->is_success) {
+              print "status = $res->is_success\n";
+              return($res->status_line);
+         }
      } else {
      # SUBJECT Search FOUND # ADD Notes
-         my $cvss_data = 0.0;
-         if ($data_ref->{"issues"}[0]->{"custom_fields"}[$Config->{API}->{cvss}-1]->{"value"} > $data->[13]) {
-             $cvss_data = $data_ref->{"issues"}[0]->{"custom_fields"}[$Config->{API}->{cvss}-1]->{"value"};
-         } else {
-             $cvss_data = $data->[13];
-         }
-
 my $json = <<"JSON";
         {
           "issue": {
@@ -120,11 +151,10 @@ JSON
          $req->header("X-Redmine-API-Key" => $Config->{API}->{key});
          $req->content($json);
          my $ua  = LWP::UserAgent->new;
-         my $res = $ua->request($req);
+         $res = $ua->request($req);
          # Success  or unSuccess
          unless ($res->is_success) {
               print "status = $res->is_success\n";
-              print "$json\n";
               return($res->status_line);
          }
      }
