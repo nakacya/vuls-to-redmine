@@ -82,7 +82,7 @@ NotFixedYet=リスト(true/false)
 $ ./vuls-to-redmine.pl -c param.conf
 ````
 
-PS:vuls -diff の結果を csv に出力して使ったほうが使いやすいかと思われ
+PS:こんな感じかな？
 ````
 $ mkdir /tmp/new
 $ mkdir /tmp/old
