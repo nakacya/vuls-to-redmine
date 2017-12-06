@@ -52,6 +52,8 @@ sub query{
      my $ua  = LWP::UserAgent->new;
      my $res = $ua->request($req);
      unless ($res->is_success) {
+          my $rtn_code = $res->is_success;
+          print "PLZ Check a Access Permission return_code=$rtn_code\n";
           die($res->status_line);
      }
      my $data_ref = decode_json( $res->content );
@@ -88,6 +90,13 @@ JSON
          }
      } else {
      # SUBJECT Search FOUND # ADD Notes
+         my $cvss_data = 0.0;
+         if ($data_ref->{"issues"}[0]->{"custom_fields"}[$Config->{API}->{cvss}-1]->{"value"} > $data->[13]) {
+             $cvss_data = $data_ref->{"issues"}[0]->{"custom_fields"}[$Config->{API}->{cvss}-1]->{"value"};
+         } else {
+             $cvss_data = $data->[13];
+         }
+
 my $json = <<"JSON";
         {
           "issue": {
@@ -99,7 +108,7 @@ my $json = <<"JSON";
             "notes": "@{[encode('utf-8', $data->[21])]} \\n\\nCVEID: $data->[6] \\n\\nCWEID: $data->[12] \\n\\nOS: $data->[2] $data->[3] \\nPackage: $data->[8] $data->[9] \\nNewPackage: $data->[10] \\nDetectionMethod: $data->[7] \\nCVSS Score:$data->[13]($data->[14])",
             "custom_fields":
              [
-                 {"value": $data->[13],"id":$Config->{API}->{cvss}},
+                 {"value": $cvss_data,"id":$Config->{API}->{cvss}},
                  {"value": "$data->[7]","id":$Config->{API}->{method}},
                  {"value": "$data->[11]","id":$Config->{API}->{notfix}}
              ]
