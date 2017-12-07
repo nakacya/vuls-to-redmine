@@ -95,7 +95,7 @@ ls $result_old/*.json | grep  -v "_diff.json" | xargs -I{} cp {} /tmp/old
 ls $VULS_LOG/current/*.json | grep  -v "_diff.json" | xargs -I{} cp {} /tmp/new
 /usr/bin/vulslogconv -i /tmp/old -o /tmp/old/csvdata.csv -t csv 
 /usr/bin/vulslogconv -i /tmp/new -o /tmp/new/csvdata.csv -t csv
-/opt/vuls/json_to_diff.pl -c /opt/vuls/json_to_diff_api.conf
-/opt/vuls/vuls_to_redmine.pl -c /opt/vuls/vuls_to_redmine_api.conf
+/opt/vuls/json-to-diff.pl -c /opt/vuls/json-to-diff_api.conf
+/opt/vuls/vuls-to-redmine.pl -c /opt/vuls/vuls-to-redmine_api.conf
 rm -rf /tmp/old /tmp/new
 ````
