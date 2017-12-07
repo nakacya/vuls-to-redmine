@@ -84,12 +84,18 @@ $ ./vuls-to-redmine.pl -c param.conf
 
 PS:こんな感じかな？
 ````
-$ mkdir /tmp/new
-$ mkdir /tmp/old
-$ ls /vuls/results/前回のディレクトリ/*.json | grep -v "_diff.json" | xargs -I{} cp {} /tmp/old
-$ ls /vuls/results/current/*.json | grep -v "_diff.json" | xargs -I{} cp {} /tmp/new
-$ vulslogconverter -i /tmp/old -o /tmp/old/csvdata.csv -t csv
-$ vulslogconverter -i /tmp/new -o /tmp/new/csvdata.csv -t csv
-$ /vuls-to-redmine.pl -c param.conf
-$ rm -rf /tmp/old /tmp/new
+#!/bin/sh
+VULS_HOME="/opt/vuls"
+VULS_LOG="${VULS_HOME}/results"
+cd /tmp
+rm -rf /tmp/old /tmp/new
+mkdir /tmp/old /tmp/new
+result_old = `ls -rtd ${VULS_LOG}/* | grep -v current | tail -1`
+ls $result_old/*.json | grep  -v "_diff.json" | xargs -I{} cp {} /tmp/old
+ls $VULS_LOG/current/*.json | grep  -v "_diff.json" | xargs -I{} cp {} /tmp/new
+/usr/bin/vulslogconv -i /tmp/old -o /tmp/old/csvdata.csv -t csv 
+/usr/bin/vulslogconv -i /tmp/new -o /tmp/new/csvdata.csv -t csv
+/opt/vuls/json_to_diff.pl -c /opt/vuls/json_to_diff_api.conf
+/opt/vuls/vuls_to_redmine.pl -c /opt/vuls/vuls_to_redmine_api.conf
+rm -rf /tmp/old /tmp/new
 ````
