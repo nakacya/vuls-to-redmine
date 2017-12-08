@@ -4,6 +4,7 @@ use Text::CSV_XS;
 use File::Sort qw(sort_file);
 use Fcntl qw(:flock);
 use IO::File;
+use Encode;
 use Config::Tiny;
 
 if (@ARGV < 2){
@@ -27,13 +28,13 @@ unless (-f "$Config->{API}->{newpath}/$Config->{API}->{newfiles}") {
 }
     sort_file({
        t => ",",
-       k => "3,4,5,6,7,8,11",
+       k => '8f,9n,6n,12n',
        I => "$Config->{API}->{oldpath}/$Config->{API}->{oldfiles}",
        o => "$Config->{API}->{oldpath}/tmp_old.csv",
     });
     sort_file({
        t => ",",
-       k => "3,4,5,6,7,8,11",
+       k => '8f,9n,6n,12n',
        I => "$Config->{API}->{newpath}/$Config->{API}->{newfiles}",
        o => "$Config->{API}->{newpath}/tmp_new.csv",
     });
@@ -53,63 +54,79 @@ unless (-f "$Config->{API}->{newpath}/$Config->{API}->{newfiles}") {
     } else {
        $count = $count_new;
     }
+#X#       print "old = " . $count_old . "\n";
+#X#       print "new = " . $count_new . "\n";
 
-    my $m = 0;
-    for (my $l = 0; $l <= $count ; $l++){
-       if ($columns_old->[$l][1] eq $columns_new->[$m][1] and
-           $columns_old->[$l][2] eq $columns_new->[$m][2] and
-           $columns_old->[$l][3] eq $columns_new->[$m][3] and
-           $columns_old->[$l][4] eq $columns_new->[$m][4] and
-           $columns_old->[$l][5] eq $columns_new->[$m][5] and
-           $columns_old->[$l][6] eq $columns_new->[$m][6] and
-           $columns_old->[$l][7] eq $columns_new->[$m][7] and
-           $columns_old->[$l][8] eq $columns_new->[$m][8] and
-           $columns_old->[$l][9] eq $columns_new->[$m][9] and
-           $columns_old->[$l][10] eq $columns_new->[$m][10] and
-           $columns_old->[$l][11] eq $columns_new->[$m][11] and
-           $columns_old->[$l][12] eq $columns_new->[$m][12] and
-           $columns_old->[$l][13] eq $columns_new->[$m][13] and
-           $columns_old->[$l][14] eq $columns_new->[$m][14] and
-           $columns_old->[$l][15] eq $columns_new->[$m][15] and
-           $columns_old->[$l][16] eq $columns_new->[$m][16] and
-           $columns_old->[$l][17] eq $columns_new->[$m][17] and
-           $columns_old->[$l][18] eq $columns_new->[$m][18] and
-           $columns_old->[$l][19] eq $columns_new->[$m][19] and
-           $columns_old->[$l][20] eq $columns_new->[$m][20] and
-           $columns_old->[$l][21] eq $columns_new->[$m][21] and
-           $columns_old->[$l][22] eq $columns_new->[$m][22] and
-           $columns_old->[$l][23] eq $columns_new->[$m][23]) {
-               $columns_old->[$l][1] = "";
-               $columns_new->[$m][1] = "";
-               $m++;
+    my $n = 0;
+    my $o = 0;
+    for ( my $l = 0 ; ($o <= $count_old && $n <= $count_new) ; $l++ ) {
+       my $dec_old = encode('utf-8',$columns_old->[$o][21]);
+       my $dec_new = encode('utf-8',$columns_new->[$n][21]);
+
+       my $old_key = $columns_old->[$o][8] . $columns_old->[$o][9] .
+                     $columns_old->[$o][6] . $columns_old->[$o][12] . $columns_old->[$o][4];
+       my $new_key = $columns_new->[$n][8] . $columns_new->[$n][9] .
+                     $columns_new->[$n][6] . $columns_new->[$n][12] . $columns_new->[$n][4];
+
+#       print "old_key = " . $old_key . "\n";
+#       print "new_key = " . $new_key . "\n";
+#       print "o = " . $o . "\n";
+#       print "n = " . $n . "\n";
+#       print "OLD DATA = " . $columns_old->[$o][6] . "  " . $dec_old . "\n";
+#       print "NEW DATA = " . $columns_new->[$n][6] . "  " . $dec_new . "\n";
+
+       if ( $old_key eq $new_key ) {
+            if ( $columns_old->[$o][10] eq $columns_new->[$n][10] ) {
+                if ( $dec_old eq $dec_new ) {
+                    $columns_old->[$o][1] = "";
+                    $columns_new->[$n][1] = "";
+                    $o++;
+                    $n++;
+#X#                    print "section DELETE\n";
+                 } else {
+                    $columns_old->[$o][1] = "";
+                    $o++;
+                    $n++;
+#X#                    print "section OLD_DELETE_1\n";
+                 }
+            } else {
+                $columns_old->[$o][1] = "";
+                $o++;
+                $n++;
+#X#                print "section OLD DELETE_2\n";
+            }
        } else {
-           if  ( $columns_old->[$l][3] eq $columns_new->[$m][3] and
-                 $columns_old->[$l][4] eq $columns_new->[$m][4] and
-                 $columns_old->[$l][5] eq $columns_new->[$m][5] and
-                 $columns_old->[$l][6] eq $columns_new->[$m][6] and
-                 $columns_old->[$l][7] eq $columns_new->[$m][7] and
-                 $columns_old->[$l][8] eq $columns_new->[$m][8] and
-                 $columns_old->[$l][11] eq $columns_new->[$m][11] and
-                 $columns_old->[$l][21] eq $columns_new->[$m][21] ) {
-                 if ( $columns_old->[$l][23] < $columns_new->[$m][23] ) {
-                    $columns_old->[$l][1] = "";
-                 }
-                 $m++;
-           } else {
-                 my $old_key = $columns_old->[$l][3] . $columns_old->[$l][4] .
-                               $columns_old->[$l][5] . $columns_old->[$l][6] .
-                               $columns_old->[$l][7] . $columns_old->[$l][8] .
-                               $columns_old->[$l][11];
-                 my $new_key = $columns_new->[$m][3] . $columns_new->[$m][4] .
-                               $columns_new->[$m][5] . $columns_new->[$m][6] .
-                               $columns_new->[$m][7] . $columns_new->[$m][8] .
-                               $columns_new->[$m][11];
-                 if ( $old_key gt $new_key ) {
-                     $m++;
-                     $l--;
-                 }
-           }
+            if ( $old_key gt $new_key ) {
+                if ( $o <  $count_old ) {
+                   $columns_old->[$o][21] = "CLOSED!!";
+                   $o++;
+                   if ( $n < $count_new ) {
+                      $columns_new->[$n][1] = "";
+                      $n++;
+                   }
+                } else {
+                   $n++;
+                }
+#X#                print "section OLD CLOSE_gt\n";
+            } else {
+#X#                print "o = $o\n";
+#X#                print "n = $n\n";
+#X#                print "count_old = $count_old\n";
+#X#                print "count_new = $count_new\n";
+                if ( $o <  $count_old ) {
+                   $columns_old->[$o][21] = "CLOSED!!";
+                   $o++;
+                   if ( $n < $count_new ) {
+                      $columns_new->[$n][1] = "";
+                      $n++;
+                   }
+                } else {
+                   $n++;
+                }
+#X#                print "section OLD CLOSE_le\n";
+            }
        }
+#       $a = <STDIN>;
     }
     flock($io_out, LOCK_EX);
     ### OLD DATA OUTPUT
@@ -136,7 +153,7 @@ unless (-f "$Config->{API}->{newpath}/$Config->{API}->{newfiles}") {
                          '"' . $columns_old->[$l][18] . '",' .
                          '"' . $columns_old->[$l][19] . '",' .
                          '"' . $columns_old->[$l][20] . '",' .
-                         '"' . "CLOSED!!" . '",' .
+                         '"' . "@{[encode('utf-8', $columns_old->[$l][21])]}" . '",' .
                          '"' . $columns_old->[$l][22] . '",' .
                          '"' . $columns_old->[$l][23] . '"' .  "\n";
        }
@@ -165,7 +182,7 @@ unless (-f "$Config->{API}->{newpath}/$Config->{API}->{newfiles}") {
                          '"' . $columns_new->[$l][18] . '",' .
                          '"' . $columns_new->[$l][19] . '",' .
                          '"' . $columns_new->[$l][20] . '",' .
-                         '"' . $columns_new->[$l][21] . '",' .
+                         '"' . "@{[encode('utf-8', $columns_new->[$l][21])]}" . '",' .
                          '"' . $columns_new->[$l][22] . '",' .
                          '"' . $columns_new->[$l][23] . '"' .  "\n";
        }
