@@ -54,99 +54,46 @@ unless (-f "$Config->{API}->{newpath}/$Config->{API}->{newfiles}") {
     } else {
        $count = $count_new;
     }
-#X#       print "old = " . $count_old . "\n";
-#X#       print "new = " . $count_new . "\n";
-
-#X#    my $n = 0;
-#X#    my $o = 0;
+    print "START OLD $count_old Count\n";
+    print "START NEW $count_new Count\n";
     for ( my $o = 0 ; $o <= $count_old ; $o++ ) {
        my $dec_old = encode('utf-8',$columns_old->[$o][21]);
-       my $old_key = $columns_old->[$o][8] . $columns_old->[$o][9] .
-                     $columns_old->[$o][6] . $columns_old->[$o][12] . $columns_old->[$o][4];
-       for ( my $n = 0 ; $n <= $count_new ; $n++ ) {
-           my $dec_new = encode('utf-8',$columns_new->[$n][21]);
-           my $new_key = $columns_new->[$n][8] . $columns_new->[$n][9] .
-                         $columns_new->[$n][6] . $columns_new->[$n][12] . $columns_new->[$n][4];
-           if ( $old_key   eq  $new_key ) {
-               $columns_old->[$o][1] = "";
-               $columns_new->[$n][1] = "";
+       my $old_key = $columns_old->[$o][8] . $columns_old->[$o][9] .  $columns_old->[$o][4];
+       for ( my $n = 0 ; ( $n <= $count_new ) ; $n++ ) {
+           if ( ( $columns_old->[$o][1] ne "" ) && ( $columns_new->[$n][1] ne "" )) {
+               my $dec_new = encode('utf-8',$columns_new->[$n][21]);
+               my $new_key = $columns_new->[$n][8] . $columns_new->[$n][9] . $columns_new->[$n][4];
+               if ( $old_key  eq  $new_key ) {
+                   #  CVE Check
+                   if ( $columns_old->[$o][6] eq $columns_new->[$n][6] ) {
+                       #  CWE Check
+                       if ( $columns_old->[$o][12] eq $columns_new->[$n][12] ) {
+                           #  Version Check
+                           if ( $columns_old->[$o][10] eq $columns_new->[$n][10] ) {
+                               #  Desc
+                               if ( $dec_old eq $dec_new ) {
+                                   $columns_old->[$o][1] = "";
+                                   $columns_new->[$n][1] = "";
+                                   $n = $count_new;
+                               } else {
+                                   $columns_old->[$o][1] = "";
+                                   $n = $count_new;
+                               }
+                           }
+                       }
+                   }
+               }
            }
        }
     }
-
-#X#    for ( my $l = 0 ; ($o <= $count_old && $n <= $count_new) ; $l++ ) {
-#X#       my $dec_old = encode('utf-8',$columns_old->[$o][21]);
-#X#       my $dec_new = encode('utf-8',$columns_new->[$n][21]);
-#X#
-#X#       my $old_key = $columns_old->[$o][8] . $columns_old->[$o][9] .
-#X#                     $columns_old->[$o][6] . $columns_old->[$o][12] . $columns_old->[$o][4];
-#X#       my $new_key = $columns_new->[$n][8] . $columns_new->[$n][9] .
-#X#                     $columns_new->[$n][6] . $columns_new->[$n][12] . $columns_new->[$n][4];
-#X#
-#X#       print "old_key = " . $old_key . "\n";
-#X#       print "new_key = " . $new_key . "\n";
-#X#       print "o = " . $o . "\n";
-#X#       print "n = " . $n . "\n";
-#X#       print "OLD DATA = " . $columns_old->[$o][6] . "  " . $dec_old . "\n";
-#X#       print "NEW DATA = " . $columns_new->[$n][6] . "  " . $dec_new . "\n";
-#X#
-#X#       if ( $old_key eq $new_key ) {
-#X#            if ( $columns_old->[$o][10] eq $columns_new->[$n][10] ) {
-#X#                if ( $dec_old eq $dec_new ) {
-#X#                    $columns_old->[$o][1] = "";
-#X#                    $columns_new->[$n][1] = "";
-#X#                    $o++;
-#X#                    $n++;
-#X##X#                    print "section DELETE\n";
-#X#                 } else {
-#X#                    $columns_old->[$o][1] = "";
-#X#                    $o++;
-#X#                    $n++;
-#X##X#                    print "section OLD_DELETE_1\n";
-#X#                 }
-#X#            } else {
-#X#                $columns_old->[$o][1] = "";
-#X#                $o++;
-#X#                $n++;
-#X##X#                print "section OLD DELETE_2\n";
-#X#            }
-#X#       } else {
-#X#            if ( $old_key gt $new_key ) {
-#X#                if ( $o <  $count_old ) {
-#X#                   $columns_old->[$o][21] = "CLOSED!!";
-#X#                   $o++;
-#X#                   if ( $n < $count_new ) {
-#X#                      $columns_new->[$n][1] = "";
-#X#                      $n++;
-#X#                   }
-#X#                } else {
-#X#                   $n++;
-#X#                }
-#X##X#                print "section OLD CLOSE_gt\n";
-#X#            } else {
-#X##X#                print "o = $o\n";
-#X##X#                print "n = $n\n";
-#X##X#                print "count_old = $count_old\n";
-#X##X#                print "count_new = $count_new\n";
-#X#                if ( $o <  $count_old ) {
-#X#                   $columns_old->[$o][21] = "CLOSED!!";
-#X#                   $o++;
-#X#                   if ( $n < $count_new ) {
-#X#                      $columns_new->[$n][1] = "";
-#X#                      $n++;
-#X#                   }
-#X#                } else {
-#X#                   $n++;
-#X#                }
-#X##X#                print "section OLD CLOSE_le\n";
-#X#            }
-#X#       }
-#X#       $a = <STDIN>;
-#X#    }
-    flock($io_out, LOCK_EX);
     ### OLD DATA OUTPUT
+    my $output_count = 0;
     for (my $l = 0; $l <= $count_old ; $l++){
-       if ( $columns_old->[$l][6] ne "healthy" and $columns_old->[$l][1] ne "" and $columns_old->[$l][0] ne "ScannedAt" ) {
+       if ( $columns_old->[$l][6] eq "healthy" || $columns_old->[$l][0] eq "ScannedAt" ) {
+           $columns_old->[$l][1] = "";
+        }
+       if ( $columns_old->[$l][1] ne "" ) {
+           $output_count++;
            print $io_out '"' . $columns_old->[$l][0] . '",' .
                          '"' . $columns_old->[$l][1] . '",' .
                          '"' . $columns_old->[$l][2] . '",' .
@@ -175,7 +122,11 @@ unless (-f "$Config->{API}->{newpath}/$Config->{API}->{newfiles}") {
     }
     ### NEW DATA OUTPUT
     for (my $l = 0; $l <= $count_new ; $l++){
-       if ( $columns_new->[$l][6] ne "healthy" and $columns_new->[$l][1] ne "" and $columns_new->[$l][0] ne "ScannedAt" ) {
+       if ( $columns_new->[$l][6] eq "healthy" || $columns_new->[$l][0] eq "ScannedAt" ) {
+           $columns_new->[$l][1] = "";
+        }
+       if ( $columns_new->[$l][1] ne "" ) {
+           $output_count++;
            print $io_out '"' . $columns_new->[$l][0] . '",' .
                          '"' . $columns_new->[$l][1] . '",' .
                          '"' . $columns_new->[$l][2] . '",' .
@@ -206,5 +157,6 @@ unless (-f "$Config->{API}->{newpath}/$Config->{API}->{newfiles}") {
     $io_out->close;
     $in_new->close;
     $in_old->close;
+    print "END OUTPUT $output_count Count\n";
 exit;
 
