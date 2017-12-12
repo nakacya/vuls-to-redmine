@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 use Text::CSV_XS;
-use File::Sort qw(sort_file);
+#X#use File::Sort qw(sort_file);
 use Fcntl qw(:flock);
 use IO::File;
 use Encode;
@@ -26,20 +26,20 @@ unless (-f "$Config->{API}->{oldpath}/$Config->{API}->{oldfiles}") {
 unless (-f "$Config->{API}->{newpath}/$Config->{API}->{newfiles}") {
    die "$Config->{API}->{newpath}/$Config->{API}->{newfiles} NOT FOUND\n"
 }
-    sort_file({
-       t => ",",
-       k => '8f,9n,6n,12n',
-       I => "$Config->{API}->{oldpath}/$Config->{API}->{oldfiles}",
-       o => "$Config->{API}->{oldpath}/tmp_old.csv",
-    });
-    sort_file({
-       t => ",",
-       k => '8f,9n,6n,12n',
-       I => "$Config->{API}->{newpath}/$Config->{API}->{newfiles}",
-       o => "$Config->{API}->{newpath}/tmp_new.csv",
-    });
-    my $in_old  = IO::File->new("$Config->{API}->{oldpath}/tmp_old.csv", "r");
-    my $in_new  = IO::File->new("$Config->{API}->{newpath}/tmp_new.csv", "r");
+#X#    sort_file({
+#X#       t => ",",
+#X#       k => '8f,9n,6n,12n',
+#X#       I => "$Config->{API}->{oldpath}/$Config->{API}->{oldfiles}",
+#X#       o => "$Config->{API}->{oldpath}/tmp_old.csv",
+#X#    });
+#X#    sort_file({
+#X#       t => ",",
+#X#       k => '8f,9n,6n,12n',
+#X#       I => "$Config->{API}->{newpath}/$Config->{API}->{newfiles}",
+#X#       o => "$Config->{API}->{newpath}/tmp_new.csv",
+#X#    });
+    my $in_old  = IO::File->new("$Config->{API}->{oldpath}/$Config->{API}->{oldfiles}", "r");
+    my $in_new  = IO::File->new("$Config->{API}->{newpath}/$Config->{API}->{newfiles}", "r");
     my $io_out  = IO::File->new("$Config->{API}->{path}/$Config->{API}->{files}", "w");
     my $csv_old = Text::CSV_XS->new ({ binary => 1 });
     my $columns_old = $csv_old->getline_all($in_old);
@@ -159,4 +159,3 @@ unless (-f "$Config->{API}->{newpath}/$Config->{API}->{newfiles}") {
     $in_old->close;
     print "END OUTPUT $output_count Count\n";
 exit;
-
