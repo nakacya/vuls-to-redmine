@@ -63,7 +63,7 @@ server=http://your_redmine_URL/   #Redmine の URL
 cvss=1                            #Redmine の cvssフィールドID
 method=2                          #Redmine の methodフィールドID
 notfix=3                          #Redmine の notfixフィールドID
-ssl_fail=0                        #Redmine サイトの SSL証明書の無視
+ssl_fail=0                        #Redmine サイトのSSL証明書の有効性チェック(0=無視)
 ````
 ### Redmine へカスタムフィールドを追加
 ````
