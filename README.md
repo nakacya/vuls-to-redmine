@@ -10,7 +10,7 @@ $ git clone https://github.com/nakacya/vuls-to-redmine
 
 ````
 Text::CSV_XS
-File::Sort
+Crypt::SSLeay
 の perl module を追加
 ````
 
