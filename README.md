@@ -3,20 +3,10 @@
 
 vulslogconverter https://github.com/usiusi360/vuls-log-converter でcsv に変換する
 
-````
-vulslogconveter -i /tmp/old -o /tmp/old/output.csv -t csv
-````
 
 ### json-to-diff を導入
 ````
 $ git clone https://github.com/nakacya/vuls-to-redmine
-````
-
-````
-Text::CSV_XS
-Crypt::SSLeay
-LWP
-の perl module を追加
 ````
 
 json-to-diff.confを随時修正
@@ -52,8 +42,9 @@ $ git clone https://github.com/nakacya/vuls-to-redmine
 Config::Tiny
 Text::CSV_XS
 LWP::UserAgent
-File::Sort
+Crypt::SSLeay
 JSON
+````
 の perl module を追加
 ````
 
@@ -62,18 +53,18 @@ param.conf を随時修正
 ````
 $ vi param.conf
 [API]
-key=redmine_api_key
-project_id=1
-tracker_id=1
-assigned_to_id=5
-status_id=1
-path=csv_path
-files=output.csv
-server=http://your_redmine_URL/
-cvss=1
-method=2
-notfix=3
-ssl_fail=0
+key=redmine_api_key               #Redmine のアクセスキー
+project_id=1                      #Redmine の project_id
+tracker_id=1                      #Redmine の tracker_id
+assigned_to_id=5                  #Redmine の assigned_to_id
+status_id=1                       #Redmine の status_id
+path=csv_path                     #json-to-diff.plの出力先path
+files=output.csv                  #json-to-diff.pl の出力ファイル
+server=http://your_redmine_URL/   #Redmine の URL
+cvss=1                            #Redmine の cvssフィールドID
+method=2                          #Redmine の methodフィールドID
+notfix=3                          #Redmine の notfixフィールドID
+ssl_fail=0                        #Redmine サイトの SSL証明書の無視
 ````
 ### Redmine へカスタムフィールドを追加
 ````
@@ -83,7 +74,7 @@ NotFixedYet=リスト(true/false)
 を作成する
 ````
 
-変換した csv を vuls-to-redmine.pl にて実行
+json-to-diff.pl で差分取得した csv を vuls-to-redmine.pl にて実行
 ````
 $ ./vuls-to-redmine.pl -c param.conf
 ````
@@ -127,11 +118,17 @@ rm -rf /tmp/old /tmp/new
 
 ### 判明している問題点
 ・redmineのチケットを手動でクローズ
+
 ・yum update で脆弱性対応
+
 ・json-to-diff.pl 及び vuls-to-redmine.pl を実行
+
 ・[[CLOSE!!]]の新規チケットが追加される
 
 または
+
 ・yum update後のデータを用いて vuls-to-redmine.pl を 複数回実行
+
 ・予期せぬ[[CLOSE!]]チケットが追加
+
 これは「クローズされたチケット」の内容を確認しないと言う仕様に基づくものですのでご了承ください。
