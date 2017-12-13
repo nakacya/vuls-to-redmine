@@ -46,8 +46,6 @@ Crypt::SSLeay
 JSON
 ````
 の perl module を追加
-````
-
 param.conf を随時修正
 
 ````
