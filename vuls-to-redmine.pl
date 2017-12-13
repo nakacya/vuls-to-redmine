@@ -8,7 +8,6 @@ use Data::Dumper;
 use LWP::UserAgent;
 use JSON;
 use Config::Tiny;
-$ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = 0;
 
 if (@ARGV < 2){
    die "USAGE: perl vuls-to-redmine.pl -c param.conf\n";
@@ -27,6 +26,7 @@ unless (-f "$Config->{API}->{path}/$Config->{API}->{files}") {
    die "$Config->{API}->{path}/$Config->{API}->{files} NOT FOUND\n"
 }
 
+$ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = $Config->{API}->{ssl_fail};
 #   CSV DATA get
     my $csv = Text::CSV_XS->new ({ binary => 1 });
     my $io  = IO::File->new("$Config->{API}->{path}/$Config->{API}->{files}", "r");
@@ -161,3 +161,4 @@ JSON
      }
      return;
 }
+
