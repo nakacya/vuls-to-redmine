@@ -9,6 +9,8 @@ use Data::Dumper;
 use LWP::UserAgent;
 use JSON;
 use Config::Tiny;
+$ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = 0;
+
 
 if (@ARGV < 2){
    die "USAGE: perl vuls-to-redmine.pl -c param.conf\n";
