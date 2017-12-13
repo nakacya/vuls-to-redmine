@@ -8,6 +8,7 @@ use Data::Dumper;
 use LWP::UserAgent;
 use JSON;
 use Config::Tiny;
+$ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = 0;
 
 if (@ARGV < 2){
    die "USAGE: perl vuls-to-redmine.pl -c param.conf\n";
@@ -47,7 +48,7 @@ sub query{
      my $req = HTTP::Request->new(GET => $url ."issues.json?subject=" . $subject);
      $req->content_type('application/json;charset=utf-8');
      $req->header("X-Redmine-API-Key" => $Config->{API}->{key});
-     my $ua  = LWP::UserAgent->new(ssl_opts => { verify_hostname => $Config->{API}->{ssl_fail};
+     my $ua  = LWP::UserAgent->new();
      my $res = $ua->request($req);
      unless ($res->is_success) {
           my $rtn_code = $res->is_success;
@@ -80,7 +81,7 @@ JSON
          $req->content_type('application/json;charset=utf-8');
          $req->header("X-Redmine-API-Key" => $Config->{API}->{key});
          $req->content($json);
-         my $ua  = LWP::UserAgent->new(ssl_opts => { verify_hostname => $Config->{API}->{ssl_fail};
+         my $ua  = LWP::UserAgent->new();
          my $res = $ua->request($req);
          # Success  or unSuccess
          unless ($res->is_success) {
@@ -119,7 +120,7 @@ JSON
          $req->content_type('application/json;charset=utf-8');
          $req->header("X-Redmine-API-Key" => $Config->{API}->{key});
          $req->content($json);
-         my $ua  = LWP::UserAgent->new(ssl_opts => { verify_hostname => $Config->{API}->{ssl_fail};
+         my $ua  = LWP::UserAgent->new();
          $res = $ua->request($req);
          # Success  or unSuccess
          unless ($res->is_success) {
@@ -150,7 +151,7 @@ JSON
          $req->content_type('application/json;charset=utf-8');
          $req->header("X-Redmine-API-Key" => $Config->{API}->{key});
          $req->content($json);
-         my $ua  = LWP::UserAgent->new(ssl_opts => { verify_hostname => $Config->{API}->{ssl_fail};
+         my $ua  = LWP::UserAgent->new();
          $res = $ua->request($req);
          # Success  or unSuccess
          unless ($res->is_success) {
@@ -160,4 +161,3 @@ JSON
      }
      return;
 }
-
