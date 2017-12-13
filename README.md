@@ -37,7 +37,7 @@ $ ./json-to-diff.pl -c json-to-diff.conf
 ````
 $ git clone https://github.com/nakacya/vuls-to-redmine
 ````
-
+perl module の追加
 ````
 Config::Tiny
 Text::CSV_XS
@@ -46,6 +46,7 @@ Crypt::SSLeay
 JSON
 ````
 の perl module を追加
+
 param.conf を随時修正
 
 ````
