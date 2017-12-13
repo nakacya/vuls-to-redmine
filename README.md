@@ -11,6 +11,7 @@ $ git clone https://github.com/nakacya/vuls-to-redmine
 ````
 Text::CSV_XS
 Crypt::SSLeay
+LWP
 の perl module を追加
 ````
 
