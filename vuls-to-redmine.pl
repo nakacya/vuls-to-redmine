@@ -28,7 +28,13 @@ unless (-f "$Config->{API}->{path}/$Config->{API}->{files}") {
 
 $ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = $Config->{API}->{ssl_fail};
 #   CSV DATA get
-    my $csv = Text::CSV_XS->new ({ binary => 1 });
+    my $csv = Text::CSV_XS->new ({
+     'quote_char'  => '"',
+     'escape_char' => '"',
+     'sep_char'    => ',',
+     'binary'      => 1,
+     'always_quote' => undef
+    });
     my $io  = IO::File->new("$Config->{API}->{path}/$Config->{API}->{files}", "r");
     my $columns = $csv->getline_all($io);
     my $count =  @$columns;
@@ -161,4 +167,3 @@ JSON
      }
      return;
 }
-
