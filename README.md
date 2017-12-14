@@ -105,7 +105,7 @@ VULS_LOG="${VULS_HOME}/results"
 cd /tmp
 rm -rf /tmp/old /tmp/new
 mkdir /tmp/old /tmp/new
-result_old = `find ${VULS_LOG} -maxdepth 1 -type d |sort -nr | tail -2 | head -1`
+result_old = `find ${VULS_LOG} -maxdepth 1 -type d |sort -nr | head -2 | tail -1`
 ls $result_old/*.json | grep  -v "_diff.json" | xargs -I{} cp {} /tmp/old
 ls $VULS_LOG/current/*.json | grep  -v "_diff.json" | xargs -I{} cp {} /tmp/new
 /usr/bin/vulslogconv -i /tmp/old -o /tmp/old/csvdata.csv -t csv 
