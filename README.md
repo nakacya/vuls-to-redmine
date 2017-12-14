@@ -68,8 +68,8 @@ ssl_fail=0                        #Redmine サイトのSSL証明書�
 ### Redmine へカスタムフィールドを追加
 ````
 CVSS=小数
-DetectionMethod=リスト(OvalMatch/ChangelogExactMatch)
-NotFixedYet=リスト(true/false)
+DetectionMethod=リスト(OvalMatch/ChangelogExactMatch/CpeNameMatch)
+NotFixedYet=リスト(true/false/Unknown)
 を作成する
 ````
 
