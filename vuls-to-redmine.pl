@@ -63,7 +63,7 @@ sub query{
      }
      my $data_ref = decode_json( $res->content );
      # SUBJECT Search NOT FOUND # ADD Ticket
-     $data->[21] =~ s/"//g;
+     $data->[21] =~ s/"/&quot;/g;
      if ($data_ref->{'total_count'} eq 0) {
 my $json = <<"JSON";
         {
