@@ -127,6 +127,7 @@ unless (-f "$Config->{API}->{newpath}/$Config->{API}->{newfiles}") {
         }
        if ( $columns_new->[$l][1] ne "" ) {
            $output_count++;
+           $columns_new->[$l][21]=~ s/"/""/g;
            print $io_out '"' . $columns_new->[$l][0] . '",' .
                          '"' . $columns_new->[$l][1] . '",' .
                          '"' . $columns_new->[$l][2] . '",' .
