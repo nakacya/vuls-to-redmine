@@ -57,6 +57,7 @@ project_id=1                      #Redmine の project_id
 tracker_id=1                      #Redmine の tracker_id
 assigned_to_id=5                  #Redmine の assigned_to_id
 status_id=1                       #Redmine の status_id
+closed_status_id=5                #Redmine への Close Ticket status_id
 path=csv_path                     #json-to-diff.plの出力先path
 files=output.csv                  #json-to-diff.pl の出力ファイル
 server=http://your_redmine_URL/   #Redmine の URL
