@@ -81,6 +81,7 @@ $ ./vuls-to-redmine.pl -c param.conf
 
 ### 使い方
 １：初回時
+
 初回だけは手動で以下のようなスクリプトを実行
 ````
 #!/bin/sh
@@ -98,6 +99,7 @@ ls $VULS_LOG/current/*.json | grep  -v "_diff.json" | xargs -I{} cp {} /tmp/new
 自分の意図とするredmineへの登録が正常に行われることを確認したら２：へ
 
 ２：二回目以降
+
 vuls scan及びreport を実行の後に以下のようなスクリプトを実行
 ````
 #!/bin/sh
@@ -123,12 +125,12 @@ rm -rf /tmp/old /tmp/new
 
 ・json-to-diff.pl 及び vuls-to-redmine.pl を実行
 
-・[[CLOSE!!]]の新規チケットが追加される
+・[[CLOSE!!]]の終了チケットが追加される
 
 または
 
 ・yum update後のデータを用いて vuls-to-redmine.pl を 複数回実行
 
-・予期せぬ[[CLOSE!]]チケットが追加
+・[[CLOSE!]]の終了チケットが追加される
 
 これは「クローズされたチケットの内容を確認しないと言う仕様」に基づくものですのでご了承ください。
