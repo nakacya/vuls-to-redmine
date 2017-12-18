@@ -108,7 +108,7 @@ JSON
 
 sub query{
      my($url,$method,$data)=@_;
-     # SUBJECT Search
+     # SUBJECT Search(OpenTicket)
      my $subject = "$data->[4] $data->[8] $data->[9]";
      my $req = HTTP::Request->new(GET => $url ."issues.json?status_id=open&subject=" . $subject );
      $req->content_type('application/json;charset=utf-8');
@@ -120,9 +120,11 @@ sub query{
           print "PLZ Check a Access Permission return_code=$rtn_code\n";
           die($res->status_line);
      }
-     my $data_ref = decode_json( $res->content );
+#X#     my $data_ref = decode_json( $res->content );
      ### OPEN Ticket NOT FOUND
+     my $data_ref = decode_json( $res->content );
      if ($data_ref->{'total_count'} eq 0) {
+         # SUBJECT Search(ClosedTicket)
          $req = HTTP::Request->new(GET => $url ."issues.json?status_id=closed&subject=" . $subject );
          $req->content_type('application/json;charset=utf-8');
          $req->header("X-Redmine-API-Key" => $Config->{API}->{key});
@@ -134,8 +136,8 @@ sub query{
               die($res->status_line);
          }
      }
-     $data_ref = decode_json( $res->content );
      # SUBJECT Search NOT FOUND # ADD Ticket
+     $data_ref = decode_json( $res->content );
      $data->[21] =~ s/"/&quot;/g;
      if ($data_ref->{'total_count'} eq 0) {
         # SUBJECT Search FOUND # CLOSED
@@ -160,12 +162,12 @@ my $json = <<"JSON";
           }
         }
 JSON
-         my $req = HTTP::Request->new($method => $url . "issues.json" );
+         $req = HTTP::Request->new($method => $url . "issues.json" );
          $req->content_type('application/json;charset=utf-8');
          $req->header("X-Redmine-API-Key" => $Config->{API}->{key});
          $req->content($json);
-         my $ua  = LWP::UserAgent->new();
-         my $res = $ua->request($req);
+         $ua  = LWP::UserAgent->new();
+         $res = $ua->request($req);
          # Success  or unSuccess
          unless ($res->is_success) {
               return($res->status_line);
