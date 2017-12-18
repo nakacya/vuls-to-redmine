@@ -110,7 +110,7 @@ sub query{
      my($url,$method,$data)=@_;
      # SUBJECT Search
      my $subject = "$data->[4] $data->[8] $data->[9]";
-     my $req = HTTP::Request->new(GET => $url ."issues.json?subject=" . $subject);
+     my $req = HTTP::Request->new(GET => $url ."search.json?q=" . $subject);
      $req->content_type('application/json;charset=utf-8');
      $req->header("X-Redmine-API-Key" => $Config->{API}->{key});
      my $ua  = LWP::UserAgent->new();
@@ -158,15 +158,30 @@ JSON
          }
          return;
      }
+     # SUBJECT Search FOUND # GET DATA
+     my $id = $data_ref->{"results"}[0]->{"id"};
+     $req = HTTP::Request->new(GET => $url ."issues/" . $data_ref->{"results"}[0]->{"id"} . "\.json");
+     $req->content_type('application/json;charset=utf-8');
+     $req->header("X-Redmine-API-Key" => $Config->{API}->{key});
+     $ua  = LWP::UserAgent->new();
+     $res = $ua->request($req);
+     unless ($res->is_success) {
+          my $rtn_code = $res->is_success;
+          print "PLZ Check a Access Permission return_code=$rtn_code\n";
+          die($res->status_line);
+     }
+     $data_ref = decode_json( $res->content );
      my $cvss_data = 0.0;
-     if ($data_ref->{"issues"}[0]->{"custom_fields"}[$Config->{API}->{cvss}-1]->{"value"} > $data->[13]) {
-         $cvss_data = $data_ref->{"issues"}[0]->{"custom_fields"}[$Config->{API}->{cvss}-1]->{"value"};
+     if ($data_ref->{"issue"}->{"custom_fields"}[$Config->{API}->{cvss}-1]->{"value"} gt $data->[13]) {
+         $cvss_data = $data_ref->{"issues"}->{"custom_fields"}[$Config->{API}->{cvss}-1]->{"value"};
      } else {
          $cvss_data = $data->[13];
      }
      # SUBJECT Search FOUND # CLOSED
      if ( $data->[21] eq "CLOSED!!" ) {
          $close{$subject} = $data;
+     } else {
+         delete($close{$subject});
      }
      # SUBJECT Search FOUND # ADD Notes
 my $json = <<"JSON";
@@ -187,7 +202,7 @@ my $json = <<"JSON";
           }
         }
 JSON
-         $req = HTTP::Request->new(PUT => $url . "issues/" . $data_ref->{issues}->[0]->{id} . "\.json");
+         $req = HTTP::Request->new(PUT => $url . "issues/" . $id . "\.json");
          $req->content_type('application/json;charset=utf-8');
          $req->header("X-Redmine-API-Key" => $Config->{API}->{key});
          $req->content($json);
