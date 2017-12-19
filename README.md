@@ -48,6 +48,7 @@ Text::CSV_XS
 LWP::UserAgent
 Crypt::SSLeay
 JSON
+Time::HiRes
 ````
 の perl module を追加
 
