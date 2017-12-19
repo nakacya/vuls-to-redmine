@@ -8,8 +8,7 @@ use Data::Dumper;
 use LWP::UserAgent;
 use JSON;
 use Config::Tiny;
-$ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = 0;
-
+use Time::HiRes qw/usleep/;
 
 if (@ARGV < 2){
    die "USAGE: perl vuls-to-redmine.pl -c param.conf\n";
@@ -42,8 +41,12 @@ $ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = $Config->{API}->{ssl_fail};
     my $count =  @$columns;
     our %close;
     print "START $count data Found\n";
+    print "S" . " "x48 . "E\n";
+    $| = 1;
     # Ticket POST/PUT
     for (my $l = 0; $l <= $count - 1 ; $l++){
+        update_progress($l, $count - 1);
+        usleep 10_000;
         query($Config->{API}->{server},"POST",$columns->[$l]);
     }
     # Ticket CLOSED
@@ -220,4 +223,9 @@ JSON
               return($res->status_line);
          }
      return;
+}
+
+sub update_progress {
+    my $progress = ($_[0] / $_[1]) * 100 / (100/50);
+    print '.'x$progress . "\r";
 }
