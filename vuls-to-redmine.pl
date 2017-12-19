@@ -69,6 +69,7 @@ sub close_API{
      unless ($res->is_success) {
           my $rtn_code = $res->is_success;
           print "PLZ Check a Access Permission return_code=$rtn_code\n";
+          print "$res->status_line\n";
           die($res->status_line);
      }
      my $data_ref = decode_json( $res->content );
@@ -106,6 +107,7 @@ JSON
      # Success  or unSuccess
      unless ($res->is_success) {
           print "CLOSE status = $subject\n";
+          print "$res->status_line\n";
           return($res->status_line);
      }
      return;
@@ -124,6 +126,7 @@ sub query{
           my $rtn_code = $res->is_success;
           print "PLZ Check a Access Permission return_code=$rtn_code\n";
           print "GET status = $subject\n";
+          print "$res->status_line\n";
           die($res->status_line);
      }
 #X#     my $data_ref = decode_json( $res->content );
@@ -139,6 +142,7 @@ sub query{
          unless ($res->is_success) {
               my $rtn_code = $res->is_success;
               print "PLZ Check a Access Permission return_code=$rtn_code\n";
+              print "$res->status_line\n";
               die($res->status_line);
          }
      }
@@ -177,12 +181,19 @@ JSON
          # Success  or unSuccess
          unless ($res->is_success) {
               print "POST status = $subject\n";
+              print "$res->status_line\n";
               return($res->status_line);
          }
          return;
      }
      # SUBJECT Search FOUND # GET DATA
      my $cvss_data = 0.0;
+     if ($data_ref->{"issues"}[0]->{"custom_fields"}[$Config->{API}->{cvss}-1]->{"value"} eq '' ) {
+         $data_ref->{"issues"}[0]->{"custom_fields"}[$Config->{API}->{cvss}-1]->{"value"} = 0;
+     }
+     if (  $data->[13] !~ /^([1-9]\d*|0)(\.\d+)?$/ ) {
+         $data->[13] = 0;
+     }
      if ($data_ref->{"issues"}[0]->{"custom_fields"}[$Config->{API}->{cvss}-1]->{"value"} ge $data->[13]) {
          $cvss_data = $data_ref->{"issues"}[0]->{"custom_fields"}[$Config->{API}->{cvss}-1]->{"value"};
      } else {
@@ -206,7 +217,7 @@ my $json = <<"JSON";
             "notes": "@{[encode('utf-8', $data->[21])]} \\n\\nCVEID: $data->[6] \\n\\nCWEID: $data->[12] \\n\\nOS: $data->[2] $data->[3] \\nPackage: $data->[8] $data->[9] \\nNewPackage: $data->[10] \\nDetectionMethod: $data->[7] \\nCVSS Score:$data->[13]($data->[14])",
             "custom_fields":
              [
-                 {"value": $cvss_data,"id":$Config->{API}->{cvss}},
+                 {"value": "$cvss_data","id":$Config->{API}->{cvss}},
                  {"value": "$data->[7]","id":$Config->{API}->{method}},
                  {"value": "$data->[11]","id":$Config->{API}->{notfix}}
              ]
@@ -222,6 +233,8 @@ JSON
          # Success  or unSuccess
          unless ($res->is_success) {
               print "PUT status = $subject\n";
+              print Dumper($json);
+              print Dumper($res->status_line);
               return($res->status_line);
          }
      return;
