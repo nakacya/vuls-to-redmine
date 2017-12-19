@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
 use strict;
 use Text::CSV_XS;
-#X#use File::Sort qw(sort_file);
 use Fcntl qw(:flock);
 use IO::File;
 use Encode;
 use Config::Tiny;
+use Time::HiRes qw/usleep/;
 
 if (@ARGV < 2){
    die "USAGE: perl test_diff.pl -c param.conf\n";
@@ -26,18 +26,6 @@ unless (-f "$Config->{API}->{oldpath}/$Config->{API}->{oldfiles}") {
 unless (-f "$Config->{API}->{newpath}/$Config->{API}->{newfiles}") {
    die "$Config->{API}->{newpath}/$Config->{API}->{newfiles} NOT FOUND\n"
 }
-#X#    sort_file({
-#X#       t => ",",
-#X#       k => '8f,9n,6n,12n',
-#X#       I => "$Config->{API}->{oldpath}/$Config->{API}->{oldfiles}",
-#X#       o => "$Config->{API}->{oldpath}/tmp_old.csv",
-#X#    });
-#X#    sort_file({
-#X#       t => ",",
-#X#       k => '8f,9n,6n,12n',
-#X#       I => "$Config->{API}->{newpath}/$Config->{API}->{newfiles}",
-#X#       o => "$Config->{API}->{newpath}/tmp_new.csv",
-#X#    });
     my $in_old  = IO::File->new("$Config->{API}->{oldpath}/$Config->{API}->{oldfiles}", "r");
     my $in_new  = IO::File->new("$Config->{API}->{newpath}/$Config->{API}->{newfiles}", "r");
     my $io_out  = IO::File->new("$Config->{API}->{path}/$Config->{API}->{files}", "w");
@@ -56,10 +44,16 @@ unless (-f "$Config->{API}->{newpath}/$Config->{API}->{newfiles}") {
     }
     print "START OLD $count_old Count\n";
     print "START NEW $count_new Count\n";
+    print "S" . " "x48 . "E\n";
+    $| = 1;
     for ( my $o = 0 ; $o <= $count_old ; $o++ ) {
        my $dec_old = encode('utf-8',$columns_old->[$o][21]);
        my $old_key = $columns_old->[$o][8] . $columns_old->[$o][9] .  $columns_old->[$o][4];
-       for ( my $n = 0 ; ( $n <= $count_new ) ; $n++ ) {
+#X#       print "count_o = $o \n";
+       update_progress($o, $count_old);
+       usleep 10_000;
+
+       for ( my $n = 0 ; ( $n <= $count_new ) && ( $columns_old->[$o][1] ne "" ) ; $n++ ) {
            if ( ( $columns_old->[$o][1] ne "" ) && ( $columns_new->[$n][1] ne "" )) {
                my $dec_new = encode('utf-8',$columns_new->[$n][21]);
                my $new_key = $columns_new->[$n][8] . $columns_new->[$n][9] . $columns_new->[$n][4];
@@ -160,3 +154,8 @@ unless (-f "$Config->{API}->{newpath}/$Config->{API}->{newfiles}") {
     $in_old->close;
     print "END OUTPUT $output_count Count\n";
 exit;
+
+sub update_progress {
+    my $progress = ($_[0] / $_[1]) * 100 / (100/50);
+    print '.'x$progress . "\r";
+}
