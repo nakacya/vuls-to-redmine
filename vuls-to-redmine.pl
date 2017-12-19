@@ -105,7 +105,7 @@ JSON
      $res = $ua->request($req);
      # Success  or unSuccess
      unless ($res->is_success) {
-          print "CLOSED!! status = $res->is_success\n";
+          print "CLOSE status = $subject\n";
           return($res->status_line);
      }
      return;
@@ -123,6 +123,7 @@ sub query{
      unless ($res->is_success) {
           my $rtn_code = $res->is_success;
           print "PLZ Check a Access Permission return_code=$rtn_code\n";
+          print "GET status = $subject\n";
           die($res->status_line);
      }
 #X#     my $data_ref = decode_json( $res->content );
@@ -175,6 +176,7 @@ JSON
          $res = $ua->request($req);
          # Success  or unSuccess
          unless ($res->is_success) {
+              print "POST status = $subject\n";
               return($res->status_line);
          }
          return;
@@ -219,7 +221,7 @@ JSON
          $res = $ua->request($req);
          # Success  or unSuccess
          unless ($res->is_success) {
-              print "NOT CLOSE status = $res->is_success\n";
+              print "PUT status = $subject\n";
               return($res->status_line);
          }
      return;
