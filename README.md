@@ -32,6 +32,10 @@ $ vulslogconverter -i /tmp/new -o /tmp/new/csvdata.csv -t csv
 ````
 $ ./json-to-diff.pl -c json-to-diff.conf
 ````
+json-to-diff.pl は「全件マッチ」を行っている為非常に時間が掛かります。
+
+＃1CPUだと10000レコードで20分位掛かります
+
 ### vuls-to-redmine を導入
 
 ````
