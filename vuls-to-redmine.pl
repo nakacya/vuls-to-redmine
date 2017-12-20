@@ -38,14 +38,14 @@ $ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = $Config->{API}->{ssl_fail};
     });
     my $io  = IO::File->new("$Config->{API}->{path}/$Config->{API}->{files}", "r");
     my $columns = $csv->getline_all($io);
-    my $count =  @$columns - 1;
+    my $count =  @$columns;
     our %close;
     print "START $count data Found\n";
     print "S" . " "x48 . "E\n";
     $| = 1;
     # Ticket POST/PUT
-    for (my $l = 0; $l <+ $count ; $l++){
-        update_progress($l, $count);
+    for (my $l = 0; $l <+ $count - 1 ; $l++){
+        update_progress($l, $count - 1);
         usleep 10_000;
         query($Config->{API}->{server},"POST",$columns->[$l]);
     }
