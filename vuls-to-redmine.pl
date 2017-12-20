@@ -38,14 +38,14 @@ $ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = $Config->{API}->{ssl_fail};
     });
     my $io  = IO::File->new("$Config->{API}->{path}/$Config->{API}->{files}", "r");
     my $columns = $csv->getline_all($io);
-    my $count =  @$columns;
+    my $count =  @$columns - 1;
     our %close;
     print "START $count data Found\n";
     print "S" . " "x48 . "E\n";
     $| = 1;
     # Ticket POST/PUT
-    for (my $l = 0; $l <= $count - 1 ; $l++){
-        update_progress($l, $count - 1);
+    for (my $l = 0; $l <+ $count ; $l++){
+        update_progress($l, $count);
         usleep 10_000;
         query($Config->{API}->{server},"POST",$columns->[$l]);
     }
@@ -116,7 +116,7 @@ JSON
 sub query{
      my($url,$method,$data)=@_;
      # SUBJECT Search(OpenTicket)
-     my $subject = "$data->[4] $data->[8] $data->[9]";
+     my $subject = "$data->[4] " . "$data->[8] " . "$data->[9]";
      my $req = HTTP::Request->new(GET => $url ."issues.json?status_id=open&subject=" . $subject );
      $req->content_type('application/json;charset=utf-8');
      $req->header("X-Redmine-API-Key" => $Config->{API}->{key});
@@ -194,7 +194,7 @@ JSON
      if (  $data->[13] !~ /^([1-9]\d*|0)(\.\d+)?$/ ) {
          $data->[13] = 0;
      }
-     if ($data_ref->{"issues"}[0]->{"custom_fields"}[$Config->{API}->{cvss}-1]->{"value"} ge $data->[13]) {
+     if ($data_ref->{"issues"}[0]->{"custom_fields"}[$Config->{API}->{cvss}-1]->{"value"} > $data->[13]) {
          $cvss_data = $data_ref->{"issues"}[0]->{"custom_fields"}[$Config->{API}->{cvss}-1]->{"value"};
      } else {
          $cvss_data = $data->[13];
