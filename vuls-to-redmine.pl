@@ -47,7 +47,7 @@ $ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = $Config->{API}->{ssl_fail};
     for (my $l = 0; $l <+ $count - 1 ; $l++){
         update_progress($l, $count - 1);
         usleep 10_000;
-        if (( $data[0] ne "ScannedAt" ) && ( $data->[9] ne "PackageVer" )){
+        if (( $columns->[$l][0] ne "ScannedAt" ) && ( $columns->[$l][9] ne "PackageVer" )){
            query($Config->{API}->{server},"POST",$columns->[$l]);
         }
     }
@@ -246,4 +246,3 @@ sub update_progress {
     my $progress = ($_[0] / $_[1]) * 100 / (100/50);
     print '.'x$progress . "\r";
 }
-
