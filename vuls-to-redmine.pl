@@ -47,7 +47,9 @@ $ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = $Config->{API}->{ssl_fail};
     for (my $l = 0; $l <+ $count - 1 ; $l++){
         update_progress($l, $count - 1);
         usleep 10_000;
-        query($Config->{API}->{server},"POST",$columns->[$l]);
+        if (( $data[0] ne "ScannedAt" ) && ( $data->[9] ne "PackageVer" )){
+           query($Config->{API}->{server},"POST",$columns->[$l]);
+        }
     }
     # Ticket CLOSED
     while ( my ($key,$val) = each %close ) {
@@ -191,7 +193,7 @@ JSON
      if ($data_ref->{"issues"}[0]->{"custom_fields"}[$Config->{API}->{cvss}-1]->{"value"} eq '' ) {
          $data_ref->{"issues"}[0]->{"custom_fields"}[$Config->{API}->{cvss}-1]->{"value"} = 0;
      }
-     if (  $data->[13] !~ /^([1-9]\d*|0)(\.\d+)?$/ ) {
+     if (  $data->[13] !~ /^([+-]?\d+)(\.?\d+)?$/ ) {
          $data->[13] = 0;
      }
      if ($data_ref->{"issues"}[0]->{"custom_fields"}[$Config->{API}->{cvss}-1]->{"value"} > $data->[13]) {
@@ -244,3 +246,4 @@ sub update_progress {
     my $progress = ($_[0] / $_[1]) * 100 / (100/50);
     print '.'x$progress . "\r";
 }
+
