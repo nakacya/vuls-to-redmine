@@ -75,12 +75,6 @@ sub close_API{
           die($res->status_line);
      }
      my $data_ref = decode_json( $res->content );
-     my $cvss_data = 0.0;
-     if ($data_ref->{"issues"}[0]->{"custom_fields"}[$Config->{API}->{cvss}-1]->{"value"} ge $data->[13]) {
-         $cvss_data = $data_ref->{"issues"}[0]->{"custom_fields"}[$Config->{API}->{cvss}-1]->{"value"};
-     } else {
-         $cvss_data = $data->[13];
-     }
 my $json = <<"JSON";
      {
       "issue": {
@@ -92,11 +86,6 @@ my $json = <<"JSON";
         "subject": "$subject",
         "notes": "\[\[ @{[encode('utf-8', $data->[21])]} \]\]",
         "custom_fields":
-         [
-             {"value": $cvss_data,"id":$Config->{API}->{cvss}},
-             {"value": "$data->[7]","id":$Config->{API}->{method}},
-             {"value": "$data->[11]","id":$Config->{API}->{notfix}}
-         ]
       }
      }
 JSON
@@ -151,6 +140,13 @@ sub query{
      # SUBJECT Search NOT FOUND # ADD Ticket
      $data_ref = decode_json( $res->content );
      $data->[21] =~ s/"/&quot;/g;
+     my $cvss_data = 0.0;
+     if ( $data->[13] !~ /^([+-]?\d+)(\.?\d+)?$/ ) {
+         $data->[13] = 0;
+     }
+     if ( $data->[13] eq "Unknown" ) {
+         $data->[13] = 0;
+     }
      if ($data_ref->{'total_count'} eq 0) {
         # SUBJECT Search FOUND # CLOSED
         if ( $data->[21] eq "CLOSED!!" ) {
@@ -183,19 +179,13 @@ JSON
          # Success  or unSuccess
          unless ($res->is_success) {
               print "POST status = $subject\n";
+              print Dumper($json);
               print "$res->status_line\n";
               return($res->status_line);
          }
          return;
      }
      # SUBJECT Search FOUND # GET DATA
-     my $cvss_data = 0.0;
-     if ($data_ref->{"issues"}[0]->{"custom_fields"}[$Config->{API}->{cvss}-1]->{"value"} eq '' ) {
-         $data_ref->{"issues"}[0]->{"custom_fields"}[$Config->{API}->{cvss}-1]->{"value"} = 0;
-     }
-     if (  $data->[13] !~ /^([+-]?\d+)(\.?\d+)?$/ ) {
-         $data->[13] = 0;
-     }
      if ($data_ref->{"issues"}[0]->{"custom_fields"}[$Config->{API}->{cvss}-1]->{"value"} > $data->[13]) {
          $cvss_data = $data_ref->{"issues"}[0]->{"custom_fields"}[$Config->{API}->{cvss}-1]->{"value"};
      } else {
