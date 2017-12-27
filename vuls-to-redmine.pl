@@ -84,8 +84,7 @@ my $json = <<"JSON";
         "assigned_to_id": $Config->{API}->{assigned_to_id},
         "done_ratio": 100,
         "subject": "$subject",
-        "notes": "\[\[ @{[encode('utf-8', $data->[21])]} \]\]",
-        "custom_fields":
+        "notes": "\[\[ @{[encode('utf-8', $data->[21])]} \]\]"
       }
      }
 JSON
@@ -98,7 +97,8 @@ JSON
      # Success  or unSuccess
      unless ($res->is_success) {
           print "CLOSE status = $subject\n";
-          print "$res->status_line\n";
+          print Dumper($json);
+          print Dumper($res->status_line);
           return($res->status_line);
      }
      return;
